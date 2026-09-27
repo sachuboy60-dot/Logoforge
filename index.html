@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>LogoForge — Free AI Logo Maker</title>
+<style>
+:root{
+ --bg:#f3ead8;--paper:#fff8e9;--ink:#241b14;--muted:#756557;
+ --orange:#ff7a3d;--yellow:#ffd166;--green:#76c893;--blue:#6fa8dc;
+ --shadow:6px 6px 0 var(--ink);--border:3px solid var(--ink);
+}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,select{font:inherit}.wrap{max-width:1180px;margin:auto;padding:18px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:var(--border);padding:10px 0 16px}
+.logo{font-weight:1000;font-size:28px;letter-spacing:-1px}.logo span{background:var(--yellow);padding:2px 7px;border:var(--border);box-shadow:4px 4px 0 var(--ink)}
+.badge{font-size:12px;font-weight:900;background:var(--green);border:2px solid var(--ink);padding:6px 9px}
+.hero{padding:35px 0 25px;display:grid;grid-template-columns:1.2fr .8fr;gap:25px;align-items:center}
+h1{font-size:clamp(38px,7vw,72px);line-height:.9;margin:0 0 18px;letter-spacing:-4px}
+.hero p{font-size:18px;max-width:650px;color:var(--muted)}
+.card{background:var(--paper);border:var(--border);box-shadow:var(--shadow);padding:18px;border-radius:10px}
+button{border:var(--border);background:#fff;box-shadow:4px 4px 0 var(--ink);padding:10px 14px;font-weight:900;cursor:pointer;border-radius:7px}
+button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.primary{background:var(--orange)}.vip{background:var(--yellow)}
+.controls{display:grid;grid-template-columns:340px 1fr;gap:24px;margin-top:15px}
+label{display:block;font-size:12px;font-weight:900;text-transform:uppercase;margin:12px 0 5px}
+input,select{width:100%;padding:11px;border:var(--border);background:#fff;border-radius:6px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.canvasbox{min-height:470px;display:grid;place-items:center;background:#dfd1bb;border:var(--border);border-radius:8px;padding:20px}
+#preview{width:min(100%,620px);aspect-ratio:1/1;background:white;border:var(--border);display:grid;place-items:center;position:relative;overflow:hidden}
+#mark{font-weight:1000;text-align:center;line-height:.9;max-width:90%;word-break:break-word}
+#tag{font-size:14px;margin-top:10px;letter-spacing:2px}
+.templates,.vipgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+.template{padding:15px;border:var(--border);background:#fff;min-height:100px;display:grid;place-items:center;cursor:pointer;box-shadow:3px 3px 0 var(--ink);font-weight:1000}
+.vipgrid{grid-template-columns:repeat(3,1fr)}.vipcard{background:#171717;color:#fff;border:var(--border);padding:16px;box-shadow:5px 5px 0 var(--ink);border-radius:9px}
+.viplogo{height:120px;background:#eee;color:#111;display:grid;place-items:center;font-size:36px;font-weight:1000;margin-bottom:12px;border-radius:5px}
+.small{font-size:12px;color:var(--muted)}.vipcard .small{color:#c9c9c9}
+section{margin:45px 0}.sectiontitle{display:flex;align-items:end;justify-content:space-between;gap:10px}
+footer{border-top:var(--border);padding:25px 0;margin-top:45px;color:var(--muted);font-size:13px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:white;padding:12px 16px;border:2px solid white;border-radius:7px;display:none;z-index:5}
+@media(max-width:800px){.hero,.controls{grid-template-columns:1fr}.templates{grid-template-columns:1fr 1fr}.vipgrid{grid-template-columns:1fr 1fr}.canvasbox{min-height:350px}}
+@media(max-width:480px){.vipgrid{grid-template-columns:1fr}.templates{grid-template-columns:1fr 1fr}header{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo">LOGO<span>FORGE</span></div>
+  <div class="badge">FREE • NO SUBSCRIPTION • NO POPUPS</div>
+</header>
+
+<section class="hero">
+ <div>
+  <h1>Make a logo.<br>Make it yours.</h1>
+  <p>A nostalgic logo studio with a free generator, custom design tools and a tiny VIP shelf. No subscription required.</p>
+  <div class="btnrow"><button class="primary" onclick="document.querySelector('#studio').scrollIntoView({behavior:'smooth'})">START DESIGNING →</button><button onclick="randomLogo()">✦ Surprise Me</button></div>
+ </div>
+ <div class="card">
+  <b>🤖 FREE AI-STYLE GENERATOR</b>
+  <p class="small">Type a brand idea and LogoForge creates a fresh visual concept using built-in styles. No account or subscription needed.</p>
+  <input id="idea" placeholder="e.g. cosmic coffee shop">
+  <div class="btnrow"><button class="primary" onclick="generate()">GENERATE LOGO</button></div>
+ </div>
+</section>
+
+<section id="studio">
+<div class="sectiontitle"><h2>🛠 Nostalgic Logo Studio</h2><span class="small">Everything happens in your browser.</span></div>
+<div class="controls">
+ <div class="card">
+  <label>Brand name</label><input id="name" value="MY BRAND" oninput="render()">
+  <label>Tagline</label><input id="tag" value="MAKE SOMETHING" oninput="render()">
+  <div class="row">
+   <div><label>Text color</label><input id="fg" type="color" value="#241b14" oninput="render()"></div>
+   <div><label>Background</label><input id="bg" type="color" value="#ffd166" oninput="render()"></div>
+  </div>
+  <div class="row">
+   <div><label>Font</label><select id="font" onchange="render()"><option value="Arial Black">Bold</option><option value="Georgia">Classic</option><option value="Courier New">Retro</option><option value="Impact">Poster</option><option value="Trebuchet MS">Friendly</option></select></div>
+   <div><label>Icon</label><select id="icon" onchange="render()"><option>✦</option><option>★</option><option>☕</option><option>⚡</option><option>🚀</option><option>🎮</option><option>◈</option><option>◆</option></select></div>
+  </div>
+  <div class="btnrow"><button onclick="undo()">↶ Undo</button><button onclick="randomLogo()">🎲 Random</button><button onclick="downloadLogo()">⬇ Download PNG</button></div>
+ </div>
+ <div class="canvasbox"><div id="preview"><div><div id="mark">✦<br>MY BRAND<div id="tagview">MAKE SOMETHING</div></div></div></div></div>
+</div>
+</section>
+
+<section>
+<div class="sectiontitle"><h2>📼 Retro templates</h2><span class="small">Tap one to edit it.</span></div>
+<div class="templates">
+ <div class="template" style="background:#ffd166" onclick="template('PIXEL CLUB','EST. 1987','#241b14','#ffd166','Courier New','★')">★<br>PIXEL CLUB</div>
+ <div class="template" style="background:#76c893" onclick="template('GREEN LAB','CREATE DAILY','#10251a','#76c893','Arial Black','◆')">◆<br>GREEN LAB</div>
+ <div class="template" style="background:#6fa8dc" onclick="template('SKYLINE','CREATIVE CO.','#10243b','#6fa8dc','Impact','✦')">✦<br>SKYLINE</div>
+ <div class="template" style="background:#ff7a3d" onclick="template('NIGHT OWL','STAY CURIOUS','#fff','#ff7a3d','Georgia','☾')">☾<br>NIGHT OWL</div>
+</div>
+</section>
+
+<section>
+<div class="sectiontitle"><h2>💎 VIP shelf — ₹10 each</h2><span class="small">One-time digital purchase concept</span></div>
+<div class="vipgrid">
+ <div class="vipcard"><div class="viplogo">NOVA<br>STUDIO</div><b>Neon Nova</b><p class="small">Premium badge-style mark.</p><button class="vip" onclick="buy(1)">GET FOR ₹10</button></div>
+ <div class="vipcard"><div class="viplogo">◆<br>ROYAL</div><b>Royal Crest</b><p class="small">Luxury emblem concept.</p><button class="vip" onclick="buy(2)">GET FOR ₹10</button></div>
+ <div class="vipcard"><div class="viplogo">⚡<br>VOLT</div><b>Retro Volt</b><p class="small">Arcade-inspired logo.</p><button class="vip" onclick="buy(3)">GET FOR ₹10</button></div>
+</div>
+</section>
+
+<section class="card">
+<h2>🎁 Rewards</h2>
+<p>For a real published store, payments should use a supported payment provider. Google Play balance cannot be directly credited by ordinary website JavaScript. This demo uses <b>Forge Points</b> as an on-site reward balance.</p>
+<div><b id="points">0</b> Forge Points</div>
+</section>
+
+<footer>LOGOFORGE © 2026 • Free logo creation • No pop-up ads • Your designs stay in your browser.</footer>
+</div>
+<div id="toast" class="toast"></div>
+<script>
+const $=id=>document.getElementById(id); let history=[];
+function state(){return {name:$('name').value,tag:$('tag').value,fg:$('fg').value,bg:$('bg').value,font:$('font').value,icon:$('icon').value}}
+function save(){history.push(state());if(history.length>30)history.shift()}
+['name','tag','fg','bg','font','icon'].forEach(id=>$(id).addEventListener('change',save));
+function render(){
+ $('preview').style.background=$('bg').value;
+ $('mark').style.color=$('fg').value;
+ $('mark').style.fontFamily=$('font').value;
+ $('mark').innerHTML=$('icon').value+'<br>'+escapeHtml($('name').value)+'<div id="tagview">'+escapeHtml($('tag').value)+'</div>';
+ $('tagview').style.cssText='font-size:14px;margin-top:12px;letter-spacing:2px;font-weight:800';
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function template(n,t,fg,bg,font,icon){save();$('name').value=n;$('tag').value=t;$('fg').value=fg;$('bg').value=bg;$('font').value=font;$('icon').value=icon;render();toast('Template loaded ✦')}
+function randomLogo(){
+ const names=['PIXEL FOX','MOONBYTE','COFFEE LAB','COSMIC','NOVA','PLAYBOX','SUNSET CO.','ROCKET CLUB'];
+ const icons=['✦','★','☕','⚡','🚀','🎮','◈']; const colors=[['#241b14','#ffd166'],['#fff','#6fa8dc'],['#10251a','#76c893'],['#fff','#ff7a3d']];
+ const c=colors[Math.floor(Math.random()*colors.length)]; save();
+ $('name').value=names[Math.floor(Math.random()*names.length)];$('tag').value='CREATE • PLAY • DREAM';
+ $('fg').value=c[0];$('bg').value=c[1];$('icon').value=icons[Math.floor(Math.random()*icons.length)];render();toast('New concept generated ✦');
+}
+function generate(){
+ const idea=$('idea').value.trim()||'MY BRAND';
+ const words=idea.toUpperCase().replace(/[^A-Z0-9 ]/g,'').split(/\s+/).slice(0,3);
+ save();$('name').value=words.join(' ')||'MY BRAND';$('tag').value='EST. 2026';
+ const palettes=[['#241b14','#ffd166'],['#fff','#6fa8dc'],['#10251a','#76c893'],['#fff','#ff7a3d']];
+ const p=palettes[Math.floor(Math.random()*palettes.length)];$('fg').value=p[0];$('bg').value=p[1];
+ $('icon').value=['✦','★','◈','⚡'][Math.floor(Math.random()*4)];render();toast('AI-style concept generated 🤖');
+}
+function undo(){if(history.length<1){toast('Nothing to undo');return}const s=history.pop();Object.keys(s).forEach(k=>$(k).value=s[k]);render();toast('Undo ↶')}
+function buy(id){toast('Demo checkout: connect a payment provider before accepting real ₹10 payments.');}
+function toast(t){$('toast').textContent=t;$('toast').style.display='block';clearTimeout(window.tt);window.tt=setTimeout(()=>{$('toast').style.display='none'},2600)}
+function downloadLogo(){
+ const size=1200,c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');
+ x.fillStyle=$('bg').value;x.fillRect(0,0,size,size);x.fillStyle=$('fg').value;x.textAlign='center';
+ const font=$('font').value; x.font='bold 190px '+font; x.fillText($('icon').value,size/2,430);
+ x.font='bold 105px '+font; let n=$('name').value.toUpperCase(); if(n.length>16)x.font='bold 75px '+font;
+ x.fillText(n,size/2,620);x.font='bold 35px '+font;x.letterSpacing='10px';x.fillText($('tag').value.toUpperCase(),size/2,700);
+ const a=document.createElement('a');a.download='logoforge-logo.png';a.href=c.toDataURL('image/png');a.click();toast('PNG exported ✓');
+}
+render();
+</script>
+</body>
+</html>
